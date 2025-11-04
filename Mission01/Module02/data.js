@@ -78,6 +78,14 @@ const rawData = [
         rating: 4.7,
         price: 599,
         stock: 12
+    },
+    {
+        id: 11,
+        category: "Electronics",
+        productName: "iPad Air",
+        rating: 4.7,
+        price: 599,
+        stock: 10
     }
 ];
 
