@@ -27,5 +27,3 @@ const binnedEvents = events.reduce((acc, current)=> {
 console.log(JSON.stringify(binnedEvents, null, 2));
 
 console.log(binnedEvents['1762228800000']);
-
-
