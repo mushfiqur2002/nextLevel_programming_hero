@@ -1,8 +1,8 @@
 // stack using an array class method
-
+// stack follow LIFO (last in first out) principle
 class Stack {
     constructor() {
-        this.array = [];
+        this.array = []
     }
     push(value) {
         this.array.push(value)
@@ -25,7 +25,7 @@ class Stack {
         }
     }
     print(msg) {
-        console.log(msg);
+        console.log(msg)
     }
     printArry() {
         return this.print(this.array)
