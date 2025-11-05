@@ -1,6 +1,6 @@
 // Queue using an array class method
 // Queue follow FIFO (First in first out) principle
-class Stack {
+class Queue {
     constructor() {
         this.array = []
     }
@@ -32,13 +32,13 @@ class Stack {
     }
 }
 
-const stack = new Stack();
-stack.enqueue(1)
-stack.enqueue(2)
-stack.enqueue(3)
-stack.enqueue(4)
-stack.printArry()
-stack.dequeue();
-stack.printArry()
-stack.peek()
+const queue = new Queue();
+queue.enqueue(1)
+queue.enqueue(2)
+queue.enqueue(3)
+queue.enqueue(4)
+queue.printArry()
+queue.dequeue();
+queue.printArry()
+queue.peek()
 
