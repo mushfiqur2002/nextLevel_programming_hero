@@ -15,14 +15,14 @@ const binTime = (time) => {
     return timeDiff;
 }
 
-const binnedEvents = events.reduce((acc, current)=> {
-    if(!acc[binTime(current.time)]){
-        acc[binTime(current.time)] = {total: 0, events: []};
+const binnedEvents = events.reduce((acc, current) => {
+    if (!acc[binTime(current.time)]) {
+        acc[binTime(current.time)] = { total: 0, events: [] };
     }
     acc[binTime(current.time)].total += 1;
     acc[binTime(current.time)].events.push(current);
     return acc;
-},{})
+}, {})
 
 console.log(JSON.stringify(binnedEvents, null, 2));
 

@@ -21,8 +21,9 @@ class Stack {
     }
     isEmpty() {
         if (this.array.length === 0) {
-            return this.print('stack is empty')
+            return true
         }
+        return false
     }
     print(msg) {
         console.log(msg)
@@ -32,13 +33,17 @@ class Stack {
     }
 }
 
-const stack = new Stack();
-stack.push(1)
-stack.push(2)
-stack.push(3)
-stack.push(4)
-stack.printArry()
-stack.pop();
-stack.printArry()
-stack.peek()
+// const stack = new Stack();
+// stack.push(1)
+// stack.push(2)
+// stack.push(3)
+// stack.push(4)
+// stack.printArry()
+// stack.pop();
+// stack.printArry()
+// stack.peek()
+
+
+
+export default Stack;
 

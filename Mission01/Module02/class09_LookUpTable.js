@@ -36,7 +36,7 @@ for (let i = 0; i < users.length; i++) {
 const postLookUpTable = posts.reduce((acc, current) => {
     const { userId, postId, title } = current;
     if (!acc[userId]) {
-        acc[userId] ={
+        acc[userId] = {
             posts: []
         }
     }
