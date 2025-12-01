@@ -116,8 +116,6 @@ const server: http.Server = http.createServer(
                 );
             });
         }
-
-
     })
 
 server.listen(config.port, () => {
