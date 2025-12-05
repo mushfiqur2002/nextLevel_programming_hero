@@ -1,111 +1,29 @@
 import express, { Request, Response } from 'express';
-import { Pool } from 'pg'
-import path from 'path';
-import * as dotenv from "dotenv";
-import { config } from 'process';
+import { config } from './config';
+import { Pool } from 'pg';
+import createTable from './config/db';
+import { userRoutes } from './modules/user/user.routes';
 
-dotenv.config({ path: path.join(process.cwd(), '.env') })
+
+const port = config.port
+const connectionString = config.connectionString
+const pool = new Pool({ connectionString: connectionString })
 
 const app = express();
-
 // parsers
 app.use(express.json());
 
-// Database
-const pool = new Pool({ connectionString: process.env.CONNECTION_STRING });
+// create tables for user and todos list
+createTable()
 
-// database create table
-async function createTable() {
-    // create user table 
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS users(
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(50) NOT NULL,
-            email VARCHAR(100) NOT NULL UNIQUE,
-            age INT NOT NULL,
-            created_at TIMESTAMP DEFAULT NOW()
-        )
-        `)
-
-    // create todos table
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS todosList(
-            id SERIAL PRIMARY KEY,
-            user_id INT REFERENCES users(id) ON DELETE CASCADE,
-            title VARCHAR(50) NOT NULL,
-            description TEXT,
-            completed BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT NOW(),
-            due_date DATE
-            )
-        `)
-}
-createTable();
 
 // --- routes ---
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-// user routes curd operations
+app.use('/user', userRoutes)
 
-// insert user
-app.post('/user', async (req: Request, res: Response) => {
-    const { name, email, age } = req.body
-    try {
-        const result = await pool.query(
-            'INSERT INTO users (name, email, age) VALUES ($1, $2, $3) RETURNING *',
-            [name, email, age]
-        )
-        console.log(result.rows[0]);
-
-        res.status(201).json({
-            success: true,
-            message: "User created successfully",
-            user: result.rows[0]
-        })
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error creating user",
-            error
-        })
-    }
-})
-// get all users
-app.get('/user', async (req: Request, res: Response) => {
-    try {
-        const result = await pool.query('SELECT * FROM users')
-        // console.log(result.rows);
-    } catch (error) {
-
-    }
-})
-// get user by id
-app.get('/user/:id', async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        if (result.rowCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            user: result.rows[0]
-        });
-    } catch (error) {
-        console.error('DB Error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error. Could not fetch user.'
-        });
-    }
-});
 // update user 
 app.put('/user/:id', async (req: Request, res: Response) => {
     const { id } = req.params
@@ -210,47 +128,47 @@ app.get('/user/todos/:user_id', async (req: Request, res: Response) => {
 
 // update user todo list
 app.put('/user/todos/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { title, user_id } = req.body;
+    const { id } = req.params;
+    const { title, user_id } = req.body;
 
-  if (!title || !user_id) {
-    return res.status(400).json({
-      success: false,
-      message: 'title and user_id are required'
-    });
-  }
+    if (!title || !user_id) {
+        return res.status(400).json({
+            success: false,
+            message: 'title and user_id are required'
+        });
+    }
 
-  try {
-    const result = await pool.query(
-      `UPDATE todosList 
+    try {
+        const result = await pool.query(
+            `UPDATE todosList 
        SET title = $1 
        WHERE id = $2 AND user_id = $3 
        RETURNING *`,
-      [title, id, user_id]
-    );
+            [title, id, user_id]
+        );
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Todo not found for this user'
-      });
+        if (result.rowCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Todo not found for this user'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Todo updated successfully',
+            todo: result.rows
+        });
+    } catch (error) {
+        console.error('Update error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error. Could not update todo.'
+        });
     }
-
-    res.status(200).json({
-      success: true,
-      message: 'Todo updated successfully',
-      todo: result.rows
-    });
-  } catch (error) {
-    console.error('Update error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error. Could not update todo.'
-    });
-  }
 });
 
 
-app.listen(process.env.PORT, () => {
-    console.log(`Example app listening on port :- ${process.env.PORT}`);
+app.listen(port, () => {
+    console.log(`Example app listening on port :- ${port}`);
 });
